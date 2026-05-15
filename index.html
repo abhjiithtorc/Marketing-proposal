@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCC User Acquisition — Proposal Configurator | Torc Infotech</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B1A3A;
+    --navy-2: #142547;
+    --navy-3: #1E3158;
+    --ink: #F4F1EA;
+    --ink-2: #D9D4C8;
+    --ink-3: #9892;
+    --muted: #7A8294;
+    --accent: #3D7AFF;
+    --accent-2: #5A8FFF;
+    --cream: #F1E6C8;
+    --gold: #E0B872;
+    --warn: #E89B5E;
+    --success: #6ECF8E;
+    --border: rgba(244, 241, 234, 0.12);
+    --border-strong: rgba(244, 241, 234, 0.22);
+
+    --display: "Bricolage Grotesque", serif;
+    --body: "Manrope", sans-serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--navy);
+    color: var(--ink);
+    font-family: var(--body);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at top right, rgba(61, 122, 255, 0.08), transparent 50%),
+      radial-gradient(ellipse at bottom left, rgba(224, 184, 114, 0.04), transparent 50%),
+      var(--navy);
+    min-height: 100vh;
+  }
+
+  .grain {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.025;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='200' height='200' filter='url(%23n)' opacity='0.5'/></svg>");
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 48px 56px 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* ========== HEADER ========== */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .brand-name {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .brand-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .header-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .header-meta .doc-num {
+    color: var(--ink-2);
+  }
+
+  /* ========== TITLE BLOCK ========== */
+  .title-block {
+    margin-bottom: 56px;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    margin-bottom: 16px;
+  }
+  .title {
+    font-family: var(--display);
+    font-weight: 800;
+    font-size: clamp(48px, 6vw, 76px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin-bottom: 24px;
+    max-width: 1100px;
+  }
+  .title em {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--cream);
+  }
+  .subtitle {
+    font-family: var(--body);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-2);
+    max-width: 720px;
+  }
+
+  /* ========== TIER PRESETS ========== */
+  .presets-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+  .preset-pill {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--ink-2);
+    padding: 14px 24px;
+    border-radius: 999px;
+    font-family: var(--body);
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .preset-pill:hover {
+    background: rgba(61, 122, 255, 0.08);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .preset-pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--ink);
+  }
+  .preset-pill .preset-amount {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 12px;
+    opacity: 0.7;
+  }
+  .preset-pill.active .preset-amount {
+    opacity: 0.9;
+  }
+
+  /* ========== MAIN GRID ========== */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 48px;
+    margin-bottom: 64px;
+  }
+
+  /* ========== CONFIGURATOR (LEFT) ========== */
+  .configurator {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  .section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::before {
+    content: "";
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .channel-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.025) 0%, rgba(255,255,255,0.01) 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 28px;
+    transition: border-color 0.2s;
+  }
+  .channel-card:hover {
+    border-color: var(--border-strong);
+  }
+  .channel-card.muted {
+    opacity: 0.7;
+  }
+  .channel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .channel-name {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 19px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .channel-amount {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    color: var(--cream);
+  }
+  .channel-amount .currency {
+    color: var(--muted);
+    margin-right: 2px;
+    font-weight: 400;
+  }
+  .channel-desc {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--muted);
+    margin-bottom: 18px;
+    min-height: 38px;
+  }
+
+  /* Custom slider */
+  .slider-wrap {
+    position: relative;
+    padding: 8px 0 4px;
+  }
+  input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: rgba(244, 241, 234, 0.1);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    background: var(--cream);
+    border-radius: 50%;
+    cursor: grab;
+    border: 3px solid var(--navy);
+    box-shadow: 0 0 0 1px var(--cream), 0 4px 16px rgba(0,0,0,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 0 1px var(--cream), 0 0 0 6px rgba(241, 230, 200, 0.15), 0 4px 16px rgba(0,0,0,0.4);
+  }
+  input[type="range"]::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.05);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    background: var(--cream);
+    border-radius: 50%;
+    cursor: grab;
+    border: 3px solid var(--navy);
+    box-shadow: 0 0 0 1px var(--cream), 0 4px 16px rgba(0,0,0,0.4);
+  }
+
+  .slider-track-fill {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent-2) 100%);
+    border-radius: 2px;
+    pointer-events: none;
+    transform: translateY(-50%);
+    transition: width 0.05s linear;
+  }
+  .slider-meta {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+  }
+  .slider-meta .recommend {
+    color: var(--gold);
+  }
+
+  /* ========== RESULTS PANEL (RIGHT, STICKY) ========== */
+  .results-panel {
+    position: sticky;
+    top: 32px;
+    align-self: start;
+    background: linear-gradient(180deg, var(--navy-2) 0%, var(--navy) 100%);
+    border: 1px solid var(--border-strong);
+    border-radius: 18px;
+    padding: 32px;
+    overflow: hidden;
+  }
+  .results-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-2), transparent);
+  }
+
+  .total-block {
+    margin-bottom: 28px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .total-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .total-amount {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .total-amount .total-currency {
+    font-size: 28px;
+    color: var(--muted);
+    font-weight: 500;
+    margin-right: 6px;
+    vertical-align: top;
+    margin-top: 8px;
+    display: inline-block;
+  }
+  .total-amount .total-per {
+    font-size: 16px;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 8px;
+    letter-spacing: -0.01em;
+  }
+  .total-breakdown {
+    display: flex;
+    gap: 24px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .breakdown-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .breakdown-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .breakdown-value {
+    font-family: var(--mono);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--ink-2);
+  }
+
+  /* Outcome KPIs */
+  .kpi-block {
+    margin-bottom: 28px;
+  }
+  .kpi-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .kpi {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi.primary {
+    background: linear-gradient(135deg, rgba(61, 122, 255, 0.12) 0%, rgba(61, 122, 255, 0.03) 100%);
+    border-color: rgba(61, 122, 255, 0.3);
+  }
+  .kpi-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--cream);
+  }
+  .kpi.primary .kpi-value {
+    color: var(--ink);
+  }
+  .kpi-sub {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* Channel bar viz */
+  .viz-block {
+    margin-bottom: 28px;
+  }
+  .viz-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+  }
+  .viz-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.04);
+  }
+  .viz-segment {
+    height: 100%;
+    transition: width 0.25s ease;
+  }
+  .viz-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px 16px;
+    margin-top: 14px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11.5px;
+    color: var(--ink-2);
+  }
+  .legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .legend-name {
+    flex: 1;
+  }
+  .legend-pct {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* Month-by-month */
+  .month-table {
+    margin-bottom: 24px;
+  }
+  .month-row {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .month-row.header {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 9.5px;
+  }
+  .month-row .month-name {
+    color: var(--ink-2);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .month-row .month-val {
+    text-align: right;
+    color: var(--cream);
+    font-weight: 500;
+  }
+  .month-row.totals .month-val {
+    color: var(--accent-2);
+    font-weight: 600;
+  }
+  .month-row.totals {
+    border-bottom: none;
+    border-top: 1px solid var(--border-strong);
+    margin-top: 4px;
+    padding-top: 14px;
+  }
+
+  /* Warnings */
+  .warnings {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 24px;
+  }
+  .warning {
+    display: flex;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(232, 155, 94, 0.08);
+    border: 1px solid rgba(232, 155, 94, 0.25);
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink-2);
+    animation: warn-slide 0.3s ease;
+  }
+  .warning.info {
+    background: rgba(61, 122, 255, 0.06);
+    border-color: rgba(61, 122, 255, 0.2);
+  }
+  @keyframes warn-slide {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .warning .warn-icon {
+    flex-shrink: 0;
+    color: var(--warn);
+    font-family: var(--mono);
+    font-weight: 600;
+  }
+  .warning.info .warn-icon {
+    color: var(--accent-2);
+  }
+
+  /* ========== ACTIONS ========== */
+  .actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .btn {
+    flex: 1;
+    padding: 14px 20px;
+    border-radius: 10px;
+    font-family: var(--body);
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-primary {
+    background: var(--cream);
+    color: var(--navy);
+    border: 1px solid var(--cream);
+  }
+  .btn-primary:hover {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-2);
+    border: 1px solid var(--border-strong);
+  }
+  .btn-secondary:hover {
+    background: rgba(255,255,255,0.04);
+    color: var(--ink);
+  }
+
+  /* ========== FOOTER NOTE ========== */
+  .footer-note {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 32px;
+  }
+  .note-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .note-label {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+  .note-text {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .note-text strong {
+    color: var(--ink-2);
+    font-weight: 600;
+  }
+
+  /* ========== PRINT ========== */
+  @media print {
+    @page {
+      size: A4;
+      margin: 16mm;
+    }
+    body {
+      background: white;
+      color: #0B1A3A;
+    }
+    .grain { display: none; }
+    .container {
+      max-width: 100%;
+      padding: 0;
+    }
+    .header, .title, .kicker, .subtitle {
+      color: #0B1A3A;
+    }
+    .title em {
+      color: #5A6A8C;
+    }
+    .subtitle {
+      color: #3D4A66;
+    }
+    .presets-row { display: none; }
+    .actions { display: none; }
+    .channel-card {
+      background: white;
+      border: 1px solid #D6D2C5;
+      page-break-inside: avoid;
+    }
+    .channel-name, .total-amount, .kpi-value {
+      color: #0B1A3A;
+    }
+    .channel-amount, .kpi-value {
+      color: #1E3158;
+    }
+    .channel-desc, .breakdown-value, .month-row {
+      color: #3D4A66;
+    }
+    .channel-desc {
+      color: #5A6A8C;
+    }
+    .main-grid {
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .results-panel {
+      position: static;
+      background: #F4F1EA;
+      border: 1px solid #D6D2C5;
+      color: #0B1A3A;
+    }
+    .results-panel::before { display: none; }
+    .total-amount, .total-amount .total-currency, .total-amount .total-per {
+      color: #0B1A3A;
+    }
+    .kpi {
+      background: white;
+      border: 1px solid #D6D2C5;
+    }
+    .kpi.primary {
+      background: #E8EDFA;
+      border-color: #B5C4E8;
+    }
+    .month-row.header, .breakdown-label, .kpi-label, .viz-label, .total-label, .section-label, .note-label {
+      color: #5A6A8C;
+    }
+    .month-row .month-val {
+      color: #1E3158;
+    }
+    .month-row.totals .month-val {
+      color: #3D7AFF;
+    }
+    .footer-note, .note-text {
+      color: #3D4A66;
+    }
+    .note-text strong {
+      color: #0B1A3A;
+    }
+    input[type="range"] {
+      display: none;
+    }
+    .slider-meta {
+      display: none;
+    }
+    .slider-wrap {
+      display: none;
+    }
+    .warnings { display: none; }
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 1100px) {
+    .container { padding: 32px 24px 60px; }
+    .main-grid { grid-template-columns: 1fr; gap: 32px; }
+    .results-panel { position: relative; top: 0; }
+    .footer-note { grid-template-columns: 1fr; gap: 20px; }
+    .title { font-size: clamp(36px, 8vw, 56px); }
+  }
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px 48px; }
+    .header { flex-direction: column; gap: 16px; }
+    .header-meta { align-items: flex-start; }
+    .kpi-row { grid-template-columns: 1fr; }
+    .total-amount { font-size: 48px; }
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="container">
+
+  <!-- ====== HEADER ====== -->
+  <header class="header">
+    <div class="brand">
+      <div class="brand-name">Torc Infotech</div>
+      <div class="brand-tag">AI-Native GTM Agency</div>
+    </div>
+    <div class="header-meta">
+      <div>Prepared for: <span class="doc-num">[Client]</span></div>
+      <div>Document: <span class="doc-num">TI-GCC-2026-04</span></div>
+      <div>Date: <span class="doc-num">15 May 2026</span></div>
+    </div>
+  </header>
+
+  <!-- ====== TITLE ====== -->
+  <div class="title-block">
+    <div class="kicker">GCC User Acquisition · Perpetuals Platform</div>
+    <h1 class="title">A 90-day acquisition plan, <em>configured to your budget.</em></h1>
+    <p class="subtitle">
+      Adjust the channel allocation below. Activated trader projections, blended CAC, and your monthly investment update in real time. Start with a tier preset, or build your own mix between the $10K floor and $80K ceiling.
+    </p>
+  </div>
+
+  <!-- ====== TIER PRESETS ====== -->
+  <div class="presets-row">
+    <button class="preset-pill" data-preset="starter">
+      <span>Starter</span>
+      <span class="preset-amount">$15K / mo</span>
+    </button>
+    <button class="preset-pill" data-preset="scale">
+      <span>Scale</span>
+      <span class="preset-amount">$30K / mo</span>
+    </button>
+    <button class="preset-pill" data-preset="dominate">
+      <span>Dominate</span>
+      <span class="preset-amount">$50K / mo</span>
+    </button>
+    <button class="preset-pill" data-preset="custom" id="customPill" style="margin-left: auto;">
+      <span>Custom mix</span>
+      <span class="preset-amount">— —</span>
+    </button>
+  </div>
+
+  <!-- ====== MAIN GRID ====== -->
+  <div class="main-grid">
+
+    <!-- LEFT: CONFIGURATOR -->
+    <div class="configurator">
+      <div class="section-label">Channel Allocation</div>
+
+      <!-- KOL -->
+      <div class="channel-card" id="card-kol">
+        <div class="channel-header">
+          <div class="channel-name">KOL &amp; Influencer</div>
+          <div class="channel-amount"><span class="currency">$</span><span id="amt-kol">5,800</span></div>
+        </div>
+        <div class="channel-desc">
+          Tier-2 (25K–100K followers) &amp; Tier-3 (5K–25K) crypto trading voices on Twitter/X, YouTube, Telegram. Tier-1 placements unlock above $8,000/mo channel spend.
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="slider-kol" min="0" max="35000" step="100" value="5800">
+        </div>
+        <div class="slider-meta">
+          <span>$0</span>
+          <span class="recommend">Recommended: 35–45% of channel deploy</span>
+          <span>$35K</span>
+        </div>
+      </div>
+
+      <!-- Community -->
+      <div class="channel-card" id="card-community">
+        <div class="channel-header">
+          <div class="channel-name">Community Building</div>
+          <div class="channel-amount"><span class="currency">$</span><span id="amt-community">2,700</span></div>
+        </div>
+        <div class="channel-desc">
+          Telegram + Discord ops. Community managers, daily market commentary, AMAs, contests. Where signups become daily-active traders.
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="slider-community" min="0" max="12000" step="100" value="2700">
+        </div>
+        <div class="slider-meta">
+          <span>$0</span>
+          <span class="recommend">Recommended: 15–20%</span>
+          <span>$12K</span>
+        </div>
+      </div>
+
+      <!-- Affiliate -->
+      <div class="channel-card" id="card-affiliate">
+        <div class="channel-header">
+          <div class="channel-name">Referral &amp; Affiliate</div>
+          <div class="channel-amount"><span class="currency">$</span><span id="amt-affiliate">1,100</span></div>
+        </div>
+        <div class="channel-desc">
+          Affiliate program dashboard, asset library, dedicated coordinator. Bonus pool for top performers unlocks above $2,500/mo channel spend.
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="slider-affiliate" min="0" max="10000" step="100" value="1100">
+        </div>
+        <div class="slider-meta">
+          <span>$0</span>
+          <span class="recommend">Recommended: 10–15% + bonus pool</span>
+          <span>$10K</span>
+        </div>
+      </div>
+
+      <!-- Paid -->
+      <div class="channel-card" id="card-paid">
+        <div class="channel-header">
+          <div class="channel-name">Paid Performance</div>
+          <div class="channel-amount"><span class="currency">$</span><span id="amt-paid">2,200</span></div>
+        </div>
+        <div class="channel-desc">
+          Twitter/X promoted, Coinzilla/Bitmedia RTB, Reddit ads, retargeting layer. Meta &amp; Google excluded — crypto-derivatives ad policy restrictions.
+        </div>
+        <div class="slider-wrap">
+          <input type="range" id="slider-paid" min="0" max="10000" step="100" value="2200">
+        </div>
+        <div class="slider-meta">
+          <span>$0</span>
+          <span class="recommend">Recommended: 10–15%</span>
+          <span>$10K</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: RESULTS -->
+    <aside class="results-panel">
+
+      <!-- Total -->
+      <div class="total-block">
+        <div class="total-label">Monthly Investment</div>
+        <div class="total-amount">
+          <span class="total-currency">$</span><span id="total-amount">15,000</span><span class="total-per">/ month</span>
+        </div>
+        <div class="total-breakdown">
+          <div class="breakdown-item">
+            <div class="breakdown-label">Channel Deploy</div>
+            <div class="breakdown-value">$<span id="channel-deploy">11,000</span></div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-label">Torc Management</div>
+            <div class="breakdown-value">$<span id="torc-mgmt">3,200</span></div>
+          </div>
+          <div class="breakdown-item">
+            <div class="breakdown-label">Mgmt %</div>
+            <div class="breakdown-value"><span id="mgmt-pct">23</span>%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-block">
+        <div class="kpi-row">
+          <div class="kpi primary">
+            <div class="kpi-label">90-Day Activated Traders</div>
+            <div class="kpi-value"><span id="total-traders">391</span></div>
+            <div class="kpi-sub">range: <span id="trader-range">332 – 450</span></div>
+          </div>
+          <div class="kpi primary">
+            <div class="kpi-label">Blended CAC</div>
+            <div class="kpi-value">$<span id="blended-cac">115</span></div>
+            <div class="kpi-sub">per activated trader</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Channel mix viz -->
+      <div class="viz-block">
+        <div class="viz-label">Channel Mix</div>
+        <div class="viz-bar" id="viz-bar">
+          <!-- Filled dynamically -->
+        </div>
+        <div class="viz-legend" id="viz-legend">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+
+      <!-- Month-by-month -->
+      <div class="viz-block">
+        <div class="viz-label">Activation Curve</div>
+        <div class="month-table">
+          <div class="month-row header">
+            <span>Period</span>
+            <span class="month-val">Traders</span>
+            <span class="month-val">Signups</span>
+            <span class="month-val">CAC</span>
+          </div>
+          <div class="month-row">
+            <span class="month-name">Month 1</span>
+            <span class="month-val" id="m1-traders">40</span>
+            <span class="month-val" id="m1-signups">450</span>
+            <span class="month-val">$<span id="m1-cac">340</span></span>
+          </div>
+          <div class="month-row">
+            <span class="month-name">Month 2</span>
+            <span class="month-val" id="m2-traders">95</span>
+            <span class="month-val" id="m2-signups">1,050</span>
+            <span class="month-val">$<span id="m2-cac">142</span></span>
+          </div>
+          <div class="month-row">
+            <span class="month-name">Month 3</span>
+            <span class="month-val" id="m3-traders">145</span>
+            <span class="month-val" id="m3-signups">1,600</span>
+            <span class="month-val">$<span id="m3-cac">93</span></span>
+          </div>
+          <div class="month-row totals">
+            <span class="month-name">90-Day Total</span>
+            <span class="month-val" id="t-traders">280</span>
+            <span class="month-val" id="t-signups">3,100</span>
+            <span class="month-val">$<span id="t-cac">142</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Warnings -->
+      <div class="warnings" id="warnings"></div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn btn-primary" onclick="window.print()">
+          Export as PDF
+        </button>
+        <button class="btn btn-secondary" onclick="resetToStarter()">
+          Reset
+        </button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ====== FOOTER NOTES ====== -->
+  <div class="footer-note">
+    <div class="note-block">
+      <div class="note-label">How projections work</div>
+      <div class="note-text">
+        Activated trader projections use channel-specific CAC ranges anchored to GCC crypto benchmarks. <strong>Diminishing returns</strong> apply above recommended ratios — over-concentrating one channel doesn't scale linearly because audience overlap and saturation limit incremental reach.
+      </div>
+    </div>
+    <div class="note-block">
+      <div class="note-label">Torc Management Fee</div>
+      <div class="note-text">
+        Scales with monthly investment: <strong>~21% at $15K</strong>, <strong>~16% at $30K</strong>, <strong>~13% at $50K</strong>. Covers account direction, performance analytics, AI workflow ops, attribution stack maintenance, and weekly + monthly reporting.
+      </div>
+    </div>
+    <div class="note-block">
+      <div class="note-label">Scope &amp; Terms</div>
+      <div class="note-text">
+        90-day engagement, four channels: KOL, Community, Affiliate, Paid Performance. <strong>SEO, PR, Events out of scope.</strong> Monthly retainer invoiced in advance. Tier upgrades require 14 days notice. Pass-through costs reconciled at actuals within the monthly cap.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// PROJECTION MODEL
+// ============================================================
+
+// Channel-specific CAC ranges at recommended ratios (USD per activated trader)
+// These are the baseline CACs when the channel is operating at optimal mix.
+// Diminishing returns multiplier applies when channel exceeds recommended share.
+const CHANNEL_PARAMS = {
+  kol: {
+    baseCAC: 95,           // CAC when at recommended share
+    minCAC: 75,            // best-case at scale (Tier-1 placements unlock)
+    tier1UnlockSpend: 8000,
+    recommendedShare: 0.42, // 42% of channel deploy
+    name: "KOL & Influencer",
+    color: "#3D7AFF"
+  },
+  community: {
+    baseCAC: 130,
+    minCAC: 100,
+    recommendedShare: 0.17,
+    name: "Community Building",
+    color: "#E0B872"
+  },
+  affiliate: {
+    baseCAC: 55,           // affiliate is most efficient when scaled
+    minCAC: 35,
+    bonusUnlockSpend: 2500,
+    recommendedShare: 0.13,
+    name: "Referral & Affiliate",
+    color: "#6ECF8E"
+  },
+  paid: {
+    baseCAC: 180,
+    minCAC: 140,
+    recommendedShare: 0.13,
+    name: "Paid Performance",
+    color: "#5A8FFF"
+  }
+};
+
+// Torc management fee — reduced 20% from original tiers, scales with total
+function calcTorcMgmt(channelDeploy) {
+  if (channelDeploy < 8000) return 2400;        // floor below Starter
+  if (channelDeploy < 16000) return 3200;       // Starter tier (was $4,000, -20%)
+  if (channelDeploy < 30000) return 4800;       // Scale tier (was $6,000, -20%)
+  return 6400;                                   // Dominate tier (was $8,000, -20%)
+}
+
+// Calculate activated traders for a given channel spend
+// Applies a diminishing returns curve when channel exceeds recommended share
+function calcChannelTraders(channelKey, spend, totalChannelDeploy) {
+  if (spend <= 0) return 0;
+  const params = CHANNEL_PARAMS[channelKey];
+  const share = totalChannelDeploy > 0 ? spend / totalChannelDeploy : 0;
+  const recommendedShare = params.recommendedShare;
+
+  // CAC starts at baseCAC, drops toward minCAC as scale increases
+  let cac = params.baseCAC;
+
+  // Scale efficiency: spending more (above floor) can drop CAC
+  if (channelKey === 'kol' && spend >= params.tier1UnlockSpend) {
+    // Tier-1 KOL unlock — CAC drops materially
+    const scaleFactor = Math.min((spend - params.tier1UnlockSpend) / 12000, 1);
+    cac = params.baseCAC - (params.baseCAC - params.minCAC) * scaleFactor;
+  } else if (channelKey === 'affiliate' && spend >= params.bonusUnlockSpend) {
+    const scaleFactor = Math.min((spend - params.bonusUnlockSpend) / 7500, 1);
+    cac = params.baseCAC - (params.baseCAC - params.minCAC) * scaleFactor;
+  } else if (channelKey === 'community' || channelKey === 'paid') {
+    // Gentler scale curve for these channels
+    const scaleFactor = Math.min(spend / 10000, 1) * 0.5;
+    cac = params.baseCAC - (params.baseCAC - params.minCAC) * scaleFactor;
+  }
+
+  // Diminishing returns: if this channel exceeds 1.5x its recommended share, CAC penalty
+  if (share > recommendedShare * 1.5 && totalChannelDeploy > 0) {
+    const overShoot = (share - recommendedShare * 1.5) / recommendedShare;
+    const penalty = 1 + Math.min(overShoot * 0.6, 0.8); // up to 80% CAC penalty
+    cac = cac * penalty;
+  }
+
+  // If channel is zeroed but others depend on it, slight system-wide impact handled outside
+  return spend / cac;
+}
+
+// Main projection
+function project() {
+  const k = parseInt(document.getElementById('slider-kol').value, 10);
+  const c = parseInt(document.getElementById('slider-community').value, 10);
+  const a = parseInt(document.getElementById('slider-affiliate').value, 10);
+  const p = parseInt(document.getElementById('slider-paid').value, 10);
+
+  const channelDeploy = k + c + a + p;
+  const torcMgmt = calcTorcMgmt(channelDeploy);
+  const total = channelDeploy + torcMgmt;
+
+  // Compute traders per channel
+  const tradersKol = calcChannelTraders('kol', k, channelDeploy);
+  const tradersComm = calcChannelTraders('community', c, channelDeploy);
+  const tradersAff = calcChannelTraders('affiliate', a, channelDeploy);
+  const tradersPaid = calcChannelTraders('paid', p, channelDeploy);
+
+  // System penalty: if community is < 10% of deploy, all channels lose 15% efficiency
+  // (community is where signups become traders — without it, retention/conversion collapses)
+  let totalTraders = tradersKol + tradersComm + tradersAff + tradersPaid;
+  let warnings = [];
+
+  const commShare = channelDeploy > 0 ? c / channelDeploy : 0;
+  if (commShare < 0.08 && channelDeploy > 5000) {
+    totalTraders *= 0.78; // 22% efficiency loss
+    warnings.push({
+      type: 'warn',
+      icon: '!',
+      text: 'Community ops is significantly underfunded. Without active community management, signups don\'t convert to traders. Projection includes a 22% efficiency penalty.'
+    });
+  }
+
+  // If affiliate is zeroed, no compounding effect in M3
+  let m3CompoundBoost = 1;
+  if (a < 500 && channelDeploy > 8000) {
+    m3CompoundBoost = 0.75;
+    warnings.push({
+      type: 'warn',
+      icon: '!',
+      text: 'Affiliate program not funded. Month 3 compounding flywheel won\'t engage — long-term CAC will not improve.'
+    });
+  }
+
+  // If KOL is zeroed, top-of-funnel collapses
+  if (k < 1000 && channelDeploy > 5000) {
+    totalTraders *= 0.55;
+    warnings.push({
+      type: 'warn',
+      icon: '!',
+      text: 'KOL channel underfunded. KOL is the highest-trust acquisition channel for crypto derivatives — without it, top-of-funnel volume drops sharply.'
+    });
+  }
+
+  // Below operational floor
+  if (channelDeploy < 8000) {
+    warnings.push({
+      type: 'info',
+      icon: 'i',
+      text: 'Below operational viability floor ($8,000+ channel deploy recommended). At this level, foundation infrastructure costs eat most of the budget before activation begins.'
+    });
+  }
+
+  // Over-concentration warnings
+  const kolShare = channelDeploy > 0 ? k / channelDeploy : 0;
+  if (kolShare > 0.65 && channelDeploy > 10000) {
+    warnings.push({
+      type: 'info',
+      icon: 'i',
+      text: 'KOL is over-concentrated (>65% of deploy). Diminishing returns curve applied — additional KOL spend doesn\'t scale linearly because audience overlap saturates.'
+    });
+  }
+  const paidShare = channelDeploy > 0 ? p / channelDeploy : 0;
+  if (paidShare > 0.30 && channelDeploy > 8000) {
+    warnings.push({
+      type: 'info',
+      icon: 'i',
+      text: 'Paid Performance is heavily weighted. Crypto-derivatives ad policy restrictions on major platforms cap effective scale — diminishing returns applied.'
+    });
+  }
+
+  // totalTraders is the steady-state MONTHLY trader output of this mix.
+  // Distribute across 3 months with foundation ramp (M1 underperforms, M3 compounds):
+  // M1 ~ 0.55x steady-state (foundation work), M2 ~ 1.15x, M3 ~ 1.7x (affiliate flywheel)
+  // — net 90-day = steady-state × 3.4 with full mix, scaled down if affiliate weak.
+
+  const m1Multiplier = 0.55;
+  const m2Multiplier = 1.15;
+  const m3Multiplier = 1.70 * m3CompoundBoost;
+
+  const m1Traders = Math.round(totalTraders * m1Multiplier);
+  const m2Traders = Math.round(totalTraders * m2Multiplier);
+  const m3Traders = Math.round(totalTraders * m3Multiplier);
+  const finalTraders = m1Traders + m2Traders + m3Traders;
+
+  // Signups (~10% of signups become traders)
+  const m1Signups = Math.round(m1Traders / 0.10);
+  const m2Signups = Math.round(m2Traders / 0.10);
+  const m3Signups = Math.round(m3Traders / 0.10);
+
+  // CAC by month: monthly investment / monthly activated traders
+  const m1Cac = m1Traders > 0 ? Math.round(total / m1Traders) : 0;
+  const m2Cac = m2Traders > 0 ? Math.round(total / m2Traders) : 0;
+  const m3Cac = m3Traders > 0 ? Math.round(total / m3Traders) : 0;
+  // Blended 90-day CAC: total 3-month spend / total 90-day activated traders
+  const blendedCac = finalTraders > 0 ? Math.round((total * 3) / finalTraders) : 0;
+
+  // Range: ±15%
+  const traderLow = Math.round(finalTraders * 0.85);
+  const traderHigh = Math.round(finalTraders * 1.15);
+
+  return {
+    k, c, a, p,
+    channelDeploy, torcMgmt, total,
+    finalTraders, traderLow, traderHigh,
+    blendedCac,
+    m1Traders, m2Traders, m3Traders,
+    m1Signups, m2Signups, m3Signups,
+    m1Cac, m2Cac, m3Cac,
+    warnings
+  };
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+function fmt(n) {
+  return n.toLocaleString('en-US');
+}
+
+function render() {
+  const r = project();
+
+  // Channel amounts
+  document.getElementById('amt-kol').textContent = fmt(r.k);
+  document.getElementById('amt-community').textContent = fmt(r.c);
+  document.getElementById('amt-affiliate').textContent = fmt(r.a);
+  document.getElementById('amt-paid').textContent = fmt(r.p);
+
+  // Slider track fills
+  setTrackFill('slider-kol', r.k, 35000);
+  setTrackFill('slider-community', r.c, 12000);
+  setTrackFill('slider-affiliate', r.a, 10000);
+  setTrackFill('slider-paid', r.p, 10000);
+
+  // Mute card if zeroed
+  document.getElementById('card-kol').classList.toggle('muted', r.k === 0);
+  document.getElementById('card-community').classList.toggle('muted', r.c === 0);
+  document.getElementById('card-affiliate').classList.toggle('muted', r.a === 0);
+  document.getElementById('card-paid').classList.toggle('muted', r.p === 0);
+
+  // Totals
+  document.getElementById('total-amount').textContent = fmt(r.total);
+  document.getElementById('channel-deploy').textContent = fmt(r.channelDeploy);
+  document.getElementById('torc-mgmt').textContent = fmt(r.torcMgmt);
+  const mgmtPct = r.total > 0 ? Math.round((r.torcMgmt / r.total) * 100) : 0;
+  document.getElementById('mgmt-pct').textContent = mgmtPct;
+
+  // Headline KPIs
+  document.getElementById('total-traders').textContent = fmt(r.finalTraders);
+  document.getElementById('trader-range').textContent = fmt(r.traderLow) + ' – ' + fmt(r.traderHigh);
+  document.getElementById('blended-cac').textContent = fmt(r.blendedCac);
+
+  // Month-by-month
+  document.getElementById('m1-traders').textContent = fmt(r.m1Traders);
+  document.getElementById('m2-traders').textContent = fmt(r.m2Traders);
+  document.getElementById('m3-traders').textContent = fmt(r.m3Traders);
+  document.getElementById('m1-signups').textContent = fmt(r.m1Signups);
+  document.getElementById('m2-signups').textContent = fmt(r.m2Signups);
+  document.getElementById('m3-signups').textContent = fmt(r.m3Signups);
+  document.getElementById('m1-cac').textContent = fmt(r.m1Cac);
+  document.getElementById('m2-cac').textContent = fmt(r.m2Cac);
+  document.getElementById('m3-cac').textContent = fmt(r.m3Cac);
+
+  document.getElementById('t-traders').textContent = fmt(r.finalTraders);
+  document.getElementById('t-signups').textContent = fmt(r.m1Signups + r.m2Signups + r.m3Signups);
+  document.getElementById('t-cac').textContent = fmt(r.blendedCac);
+
+  // Channel mix bar + legend
+  renderViz(r);
+
+  // Warnings
+  renderWarnings(r.warnings);
+
+  // Check preset match
+  updatePresetActive(r);
+}
+
+function setTrackFill(sliderId, val, max) {
+  const slider = document.getElementById(sliderId);
+  const wrap = slider.parentElement;
+  let fill = wrap.querySelector('.slider-track-fill');
+  if (!fill) {
+    fill = document.createElement('div');
+    fill.className = 'slider-track-fill';
+    wrap.insertBefore(fill, slider);
+  }
+  const pct = (val / max) * 100;
+  fill.style.width = pct + '%';
+}
+
+function renderViz(r) {
+  const channels = [
+    { key: 'kol', val: r.k, ...CHANNEL_PARAMS.kol },
+    { key: 'community', val: r.c, ...CHANNEL_PARAMS.community },
+    { key: 'affiliate', val: r.a, ...CHANNEL_PARAMS.affiliate },
+    { key: 'paid', val: r.p, ...CHANNEL_PARAMS.paid },
+  ];
+
+  const bar = document.getElementById('viz-bar');
+  const legend = document.getElementById('viz-legend');
+  bar.innerHTML = '';
+  legend.innerHTML = '';
+
+  channels.forEach(ch => {
+    const pct = r.channelDeploy > 0 ? (ch.val / r.channelDeploy) * 100 : 0;
+    if (pct > 0) {
+      const seg = document.createElement('div');
+      seg.className = 'viz-segment';
+      seg.style.width = pct + '%';
+      seg.style.background = ch.color;
+      bar.appendChild(seg);
+    }
+
+    const item = document.createElement('div');
+    item.className = 'legend-item';
+    item.innerHTML = `
+      <span class="legend-dot" style="background: ${ch.color};"></span>
+      <span class="legend-name">${ch.name}</span>
+      <span class="legend-pct">${Math.round(pct)}%</span>
+    `;
+    legend.appendChild(item);
+  });
+}
+
+function renderWarnings(warnings) {
+  const wrap = document.getElementById('warnings');
+  wrap.innerHTML = '';
+  warnings.forEach(w => {
+    const div = document.createElement('div');
+    div.className = 'warning ' + (w.type === 'info' ? 'info' : '');
+    div.innerHTML = `<span class="warn-icon">${w.icon}</span><span>${w.text}</span>`;
+    wrap.appendChild(div);
+  });
+}
+
+// ============================================================
+// PRESETS
+// ============================================================
+const PRESETS = {
+  starter:   { k: 5800,  c: 2700, a: 1100, p: 2200 },
+  scale:     { k: 12800, c: 4800, a: 3200, p: 4400 },
+  dominate:  { k: 22800, c: 7800, a: 6700, p: 6300 }
+};
+
+function applyPreset(name) {
+  const preset = PRESETS[name];
+  if (!preset) return;
+  document.getElementById('slider-kol').value = preset.k;
+  document.getElementById('slider-community').value = preset.c;
+  document.getElementById('slider-affiliate').value = preset.a;
+  document.getElementById('slider-paid').value = preset.p;
+  render();
+}
+
+function updatePresetActive(r) {
+  const matchStarter = (r.k === 5800 && r.c === 2700 && r.a === 1100 && r.p === 2200);
+  const matchScale = (r.k === 12800 && r.c === 4800 && r.a === 3200 && r.p === 4400);
+  const matchDominate = (r.k === 22800 && r.c === 7800 && r.a === 6700 && r.p === 6300);
+
+  document.querySelectorAll('.preset-pill').forEach(p => p.classList.remove('active'));
+  if (matchStarter) document.querySelector('[data-preset="starter"]').classList.add('active');
+  else if (matchScale) document.querySelector('[data-preset="scale"]').classList.add('active');
+  else if (matchDominate) document.querySelector('[data-preset="dominate"]').classList.add('active');
+  else document.getElementById('customPill').classList.add('active');
+
+  document.getElementById('customPill').querySelector('.preset-amount').textContent = '$' + fmt(r.total) + ' / mo';
+}
+
+function resetToStarter() {
+  applyPreset('starter');
+}
+
+// ============================================================
+// EVENT WIRING
+// ============================================================
+document.querySelectorAll('input[type="range"]').forEach(s => {
+  s.addEventListener('input', render);
+});
+document.querySelectorAll('.preset-pill[data-preset]').forEach(p => {
+  if (p.id !== 'customPill') {
+    p.addEventListener('click', () => applyPreset(p.dataset.preset));
+  }
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
